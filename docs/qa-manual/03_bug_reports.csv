@@ -1,0 +1,83 @@
+"ID: 1","Summary: Inconsistent letter capitalization across UI elements (Title Case vs Sentence case: 'Book a Table' vs 'Main page', 'All dishes' vs 'Main Courses')","","Env: P_PRD / Web
+
+Priority: Low
+
+Severity: Minor"
+"","Pre-conditions:
+1. Guest has joined the group session (status 'Reserved').
+2. Guest is on the Menu page.","",""
+"","Steps:
+1. Navigate to the Menu page as a Guest.
+2. Inspect top header navigation links: 'Main page', 'Book a Table', 'Reservations'.
+3. Inspect breadcrumbs: 'Main page' > 'Menu'.
+4. Inspect category tabs: 'All dishes', 'Appetizers', 'Main Courses'.
+5. Inspect status badges on unavailable cards: 'Out Of Stock'.
+
+Actual result:
+Letter capitalization rules are mixed and inconsistently applied across navigation, categories, and badges without following a single capitalization guide:
+- Header navigation mixes Sentence case and Title Case: 'Main page' (lowercase 'p') vs 'Book a Table' (capitalized 'T').
+- Breadcrumbs: 'Main page' (lowercase 'p') vs 'Menu'.
+- Category tabs: 'All dishes' (lowercase 'd', Sentence case) vs 'Main Courses' (capitalized 'M' and 'C', Title Case).
+- Status badges: 'Out Of Stock' (capitalizes preposition 'Of') vs requirements terminology 'On Stop'.
+
+Expected result:
+UI text across navigation, category filters, and badges must strictly adhere to a consistent capitalization style guide (preferably Title Case: 'Main Page', 'Book a Table', 'All Dishes', 'Main Courses', 'Out of Stock' / 'On Stop').","",""
+"Atachments: HW QA/image (4).png (Header navigation, breadcrumbs, category tabs)","","",""
+"ID: 2","Summary: Grammatical typo in serving size for 'Fresh Avocado Toast': weight displayed as '2000' without units instead of '200 g'","","Env: P_PRD / Web
+
+Priority: Medium
+
+Severity: Minor"
+"","Pre-conditions:
+1. Guest has joined the group session (status 'Reserved').
+2. Guest is on the Menu page viewing dish items.","",""
+"","Steps:
+1. Navigate to the Menu page as a Guest.
+2. Locate the dish card 'Fresh Avocado Toast'.
+3. Inspect the serving size / weight label next to the price ($12.00).
+
+Actual result:
+The weight is displayed as '2000' (typo with an extra zero, and the unit 'g' is completely missing).
+
+Expected result:
+According to AC 2: 'Each menu item must clearly display name, price, serving size in grams...'. The weight must be formatted with unit 'g' and reflect realistic portion size: '200 g'.","",""
+"Atachments: HW QA/image (4).png (card 'Fresh Avocado Toast')","","",""
+"ID: 3","Summary: Inconsistent spacing and units formatting in serving size across menu cards ('2000', '350g', '450 g')","","Env: P_PRD / Web
+
+Priority: Low
+
+Severity: Minor"
+"","Pre-conditions:
+1. Guest is on the Menu page.
+2. Dishes with serving sizes are displayed.","",""
+"","Steps:
+1. Navigate to the Menu page.
+2. Compare the weight label formatting across all three cards: 'Fresh Avocado Toast', 'Truffle Mushroom Risotto', and 'Margherita Pizza'.
+
+Actual result:
+Weight formatting is completely inconsistent:
+- 'Fresh Avocado Toast': '2000' (missing unit 'g', extra zero).
+- 'Truffle Mushroom Risotto': '350g' (no space between number and unit).
+- 'Margherita Pizza': '450 g' (standard space before unit).
+
+Expected result:
+Serving size must follow a uniform format specification across the application: '{value} g' (e.g. '200 g', '350 g', '450 g').","",""
+"Atachments: HW QA/image (4).png (all cards)","","",""
+"ID: 4","Summary: Status badge terminology mismatch with requirements ('Out Of Stock' in UI vs 'On Stop' in US AC 4)","","Env: P_PRD / Web
+
+Priority: Low
+
+Severity: Trivial"
+"","Pre-conditions:
+1. Guest is on the Menu page.
+2. Menu contains unavailable dishes ('Fresh Avocado Toast', 'Truffle Mushroom Risotto').","",""
+"","Steps:
+1. Navigate to the Menu page.
+2. Inspect the availability badge label on unavailable dishes ('Fresh Avocado Toast', 'Truffle Mushroom Risotto').
+
+Actual result:
+The badge displays 'Out Of Stock', whereas Acceptance Criteria AC 4 explicitly defines the requirement: 'Items currently marked ""On Stop"" are clearly indicated as unavailable...'.
+
+Expected result:
+Terminology in the application UI should match the approved requirements specification and design glossary: use 'On Stop' (or update the requirements to standard 'Out of Stock').","",""
+"Atachments: HW QA/image (4).png (cards 1 and 2)","","",""

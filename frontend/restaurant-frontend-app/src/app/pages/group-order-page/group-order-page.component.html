@@ -1,0 +1,157 @@
+<main class="group-order-page">
+  @if (isLoading()) {
+    <div class="group-order-page__state group-order-page__state--loading">
+      <p>Loading group pre-order...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="group-order-page__state group-order-page__state--error">
+      <p>{{ errorMessage() }}</p>
+      @if (errorMessage() !== 'Group reservation not found') {
+        <button type="button" class="btn btn-secondary" (click)="loadData()">Try again</button>
+      }
+    </div>
+  } @else {
+    <!-- Header -->
+    <header class="group-order-header">
+      <div class="group-order-header__top">
+        <h1 class="group-order-header__title">Group Pre-Order</h1>
+        <span class="badge" [class.badge--success]="isSubmitted()" [class.badge--warning]="!isSubmitted()">
+          {{ statusBadge() }}
+        </span>
+      </div>
+
+      @if (invite(); as inv) {
+        <div class="group-order-header__meta">
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{{ inv.LocationAddress }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Date:</span>
+            <span class="meta-value">{{ inv.StartTime | date: 'mediumDate' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Time:</span>
+            <span class="meta-value">{{ inv.StartTime | date: 'shortTime' }} - {{ inv.EndTime | date: 'shortTime' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Guests:</span>
+            <span class="meta-value">{{ participants().length }} of {{ inv.MaxGuestCount }} guests</span>
+          </div>
+        </div>
+      }
+
+      <!-- Sync bar -->
+      <div class="sync-bar">
+        @if (lastUpdatedAt(); as updatedAt) {
+          <span class="sync-bar__time">Updated at {{ updatedAt | date: 'mediumTime' }}</span>
+        }
+        @if (syncError()) {
+          <span class="sync-bar__error">Couldn't refresh. Showing data from {{ lastUpdatedAt() | date: 'mediumTime' }}</span>
+        }
+        @if (!isSubmitted()) {
+          <button type="button" class="btn btn-refresh" (click)="refresh()">Refresh</button>
+        }
+      </div>
+    </header>
+
+    <!-- Warning banner if unsubmitted participants -->
+    @if (!isSubmitted() && unsubmittedCount() > 0) {
+      <div class="warning-banner" role="alert">
+        <p>
+          {{ unsubmittedCount() }} participant{{ unsubmittedCount() > 1 ? 's' : '' }} hasn't submitted their cart yet — their dishes won't be included in the order
+        </p>
+      </div>
+    }
+
+    <!-- Content -->
+    @if (allEmpty()) {
+      <div class="group-order-page__state group-order-page__state--empty">
+        <p>Participants haven't added any dishes yet</p>
+      </div>
+    } @else {
+      <!-- Participants cards list -->
+      <section class="group-order-section">
+        <ul class="participants-list">
+          @for (person of participants(); track person.id) {
+            <li class="participants-list__item">
+              <app-participant-card
+                [participant]="person"
+                [isOwner]="person.id === ownerSessionId()"
+                [canRemove]="person.type === 'Guest' && !isSubmitted()"
+                (removeClick)="promptRemoveGuest($event)"
+              />
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Consolidated Pre-Order Summary -->
+      @if (consolidatedOrder(); as consolidated) {
+        <section class="consolidated-section">
+          <h2 class="consolidated-section__title">Consolidated pre-order</h2>
+          <ul class="consolidated-list">
+            @for (item of consolidated.items; track item.dish.id) {
+              <li class="consolidated-item">
+                <span class="consolidated-item__name">{{ item.dish.name }} × {{ item.quantity }}</span>
+                <span class="consolidated-item__price">{{ item.dish.price * item.quantity | currency }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      <!-- Bottom action bar -->
+      <footer class="order-summary-footer">
+        <div class="grand-total">
+          <span class="grand-total__label">Grand Total:</span>
+          <span class="grand-total__value">{{ grandTotal() | currency }}</span>
+        </div>
+
+        @if (!isSubmitted()) {
+          <button
+            type="button"
+            class="btn btn-primary btn-submit"
+            [disabled]="!hasConfirmedDishes() || isSubmitting()"
+            (click)="openSubmitModal()"
+          >
+            Submit Pre-Order
+          </button>
+        }
+      </footer>
+    }
+  }
+
+  <!-- Submit confirmation modal -->
+  @if (isSubmitModalOpen()) {
+    <app-modal title="Submit Group Pre-Order" (closed)="closeSubmitModal()">
+      <p>Are you sure you want to submit the group pre-order to the restaurant? Only confirmed carts will be included.</p>
+      <div modal-actions class="modal-buttons">
+        <button type="button" class="btn btn-secondary" [disabled]="isSubmitting()" (click)="closeSubmitModal()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" [disabled]="isSubmitting()" (click)="confirmSubmit()">
+          {{ isSubmitting() ? 'Submitting…' : 'Submit' }}
+        </button>
+      </div>
+    </app-modal>
+  }
+
+  <!-- Remove guest modal -->
+  @if (guestToRemove(); as guest) {
+    <app-modal title="Remove Guest" (closed)="closeRemoveModal()">
+      <p>
+        Are you sure you want to remove <strong>{{ guest.name }}</strong> and their pre-order from this reservation? This action cannot be undone.
+      </p>
+      <div modal-actions class="modal-buttons">
+        <button type="button" class="btn btn-secondary" [disabled]="isRemovingGuest()" (click)="closeRemoveModal()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" [disabled]="isRemovingGuest()" (click)="confirmRemoveGuest()">
+          Remove Guest
+        </button>
+      </div>
+    </app-modal>
+  }
+</main>
+
