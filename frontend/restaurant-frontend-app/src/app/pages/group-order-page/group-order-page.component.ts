@@ -120,7 +120,9 @@ export class GroupOrderPageComponent implements OnInit {
 
     this.groupOrdersService.getOwnerSessionId$(resId).subscribe({
       next: (ownerId) => this.ownerSessionId.set(ownerId),
-      error: () => {},
+      error: () => {
+        // Ignored: silent failure for optional owner session ID
+      },
     });
 
     this.groupOrdersService.getStatus$(groupId).subscribe({
@@ -132,7 +134,9 @@ export class GroupOrderPageComponent implements OnInit {
           this.stopSync();
         }
       },
-      error: () => {},
+      error: () => {
+        // Ignored: handled by template state
+      },
     });
 
     this.groupOrdersService.getSessions$(groupId).subscribe({
@@ -186,7 +190,9 @@ export class GroupOrderPageComponent implements OnInit {
           this.stopSync();
         }
       },
-      error: () => {},
+      error: () => {
+        // Ignored in background polling
+      },
     });
 
     this.groupOrdersService.getSessions$(groupId, { silent }).subscribe({
@@ -237,7 +243,7 @@ export class GroupOrderPageComponent implements OnInit {
           this.groupStatus.set({ currentParticipants: 0, maxCapacity: 0, status: 'Submitted' });
         }
       },
-      error: (err) => {
+      error: () => {
         this.isSubmitting.set(false);
         this.closeSubmitModal();
       },
