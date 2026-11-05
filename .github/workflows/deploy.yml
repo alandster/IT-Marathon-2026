@@ -64,7 +64,9 @@ jobs:
         working-directory: ${{ env.APP_DIR }}
         env:
           SDCT_CONF: .syndicate-config-restaurant-backend-app
-        run: syndicate build
+        run: |
+          sed -i "s|project_path:.*|project_path: \"$(pwd)\"|g" .syndicate-config-restaurant-backend-app/syndicate.yml
+          syndicate build
 
       - name: Syndicate deploy
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy }}
